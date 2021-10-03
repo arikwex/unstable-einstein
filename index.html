@@ -618,9 +618,32 @@ function Engine() {
   const railWidth = 0.1;
   const buttonWidth = 0.15;
 
+  // Game state
+  let normalTime = true;
+  let normalMatter = true;
+  let normalSpace = true;
+
   // Game objects
   const player = new Player(this);
   add(player);
+
+  // Touch controls
+  bus.on('tap', ({x, y}) => {
+    const h = height();
+    const w = width();
+    const th = h - buttonWidth * h;
+    if (y > th && y < h) {
+      if (x > 0 && x <= w / 3) {
+        normalSpace = !normalSpace;
+      }
+      if (x > w / 3 && x <= w * 2 / 3) {
+        normalMatter = !normalMatter;
+      }
+      if (x > w * 2 / 3 && x <= w) {
+        normalTime = !normalTime;
+      }
+    }
+  });
 
   this.getScale = () => {
     return width() / 800.0;
@@ -657,8 +680,13 @@ function Engine() {
 
     // Space controls
     ctx.lineWidth = s * 0.3;
-    ctx.strokeStyle = '#fff';
-    ctx.fillStyle = '#363';
+    if (normalSpace) {
+      ctx.strokeStyle = '#fff';
+      ctx.fillStyle = '#363';
+    } else {
+      ctx.strokeStyle = '#666';
+      ctx.fillStyle = '#232';
+    }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.save();
@@ -674,17 +702,27 @@ function Engine() {
     ctx.lineTo(w / 6 + s * 0.2, bh * 0.65 + s);
     ctx.lineTo(w / 6 + s * 1.5, bh * 0.65);
     ctx.stroke();
-    ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = `${s * 0.8}px monospace`;
-    ctx.fillText('Normal Space', w / 6, bh * 0.2);
+    if (normalSpace) {
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Normal Space', w / 6, bh * 0.2);
+    } else {
+      ctx.fillStyle = '#888';
+      ctx.fillText('Stretched Space', w / 6, bh * 0.2);
+    }
     ctx.restore();
 
     // Matter controls
     ctx.lineWidth = s * 0.3;
-    ctx.strokeStyle = '#fff';
-    ctx.fillStyle = '#633';
+    if (normalMatter) {
+      ctx.strokeStyle = '#fff';
+      ctx.fillStyle = '#633';
+    } else {
+      ctx.strokeStyle = '#666';
+      ctx.fillStyle = '#322';
+    }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.save();
@@ -693,17 +731,27 @@ function Engine() {
     ctx.beginPath();
     ctx.arc(w / 6, bh * 0.65, s * 1.1, 0, 6.29);
     ctx.stroke();
-    ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = `${s * 0.8}px monospace`;
-    ctx.fillText('Normal Matter', w / 6, bh * 0.2);
+    if (normalMatter) {
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Normal Matter', w / 6, bh * 0.2);
+    } else {
+      ctx.fillStyle = '#888';
+      ctx.fillText('Anti Matter', w / 6, bh * 0.2);
+    }
     ctx.restore();
 
     // Time controls
     ctx.lineWidth = s * 0.3;
-    ctx.strokeStyle = '#fff';
-    ctx.fillStyle = '#336';
+    if (normalTime) {
+      ctx.strokeStyle = '#fff';
+      ctx.fillStyle = '#336';
+    } else {
+      ctx.strokeStyle = '#666';
+      ctx.fillStyle = '#223';
+    }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.save();
@@ -716,11 +764,16 @@ function Engine() {
     ctx.lineTo(w / 6 + s, bh * 0.65 + s);
     ctx.closePath();
     ctx.stroke();
-    ctx.fillStyle = '#fff';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = `${s * 0.8}px monospace`;
-    ctx.fillText('Normal Time', w / 6, bh * 0.2);
+    if (normalTime) {
+      ctx.fillStyle = '#fff';
+      ctx.fillText('Normal Time', w / 6, bh * 0.2);
+    } else {
+      ctx.fillStyle = '#888';
+      ctx.fillText('Paused Time', w / 6, bh * 0.2);
+    }
     ctx.restore();
   };
 }
