@@ -32,7 +32,7 @@ export default function MainMenu() {
     const y = h * 1.02;
     ctx.save();
     let a = Date.now() * 0.006;
-    var s = w * 0.2;
+    var s = h * 0.2;
     ctx.translate(x, y);
     let breath = Math.cos(a * 0.7);
     let th = -s * (1.95 + breath * 0.05);
