@@ -8,6 +8,7 @@ import Poof from './poof.js';
 
 import Player from './player.js';
 import FixedWall from './fixed-wall.js';
+import StretchWall from './stretch-wall.js';
 
 export default function Engine() {
   // Game dimensions
@@ -94,15 +95,31 @@ export default function Engine() {
     }
   }
 
+  this.getStretch = () => {
+    return normalSpace;
+  }
+
   let tickNum = 2;
   const generateObstacles = () => {
-    if (Math.random() > 0.15) {
+    // Matter wall
+    if (Math.random() > 0.5) {
       let lane = 0;
       if (Math.random() > 0.5) {
         lane = 1;
       }
-      gameobjects.add(new FixedWall(this, tickNum, lane));
+      // gameobjects.add(new FixedWall(this, tickNum, lane));
+      // return
     }
+
+    // Space wall
+    if (Math.random() > 0.0) {
+      let lane = 0;
+      if (Math.random() > 0.5) {
+        lane = 1;
+      }
+      gameobjects.add(new StretchWall(this, tickNum, lane));
+    }
+
     tickNum += 1;
   };
 
