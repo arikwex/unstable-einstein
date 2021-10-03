@@ -1,7 +1,7 @@
 import * as canvas from './canvas.js';
 import bus from './bus.js';
 
-function StartButton(txt = 'Liftoff') {
+function StartButton(txt = 'Begin') {
   var hovering = false;
 
   var fn = ({x, y}) => {

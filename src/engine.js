@@ -21,6 +21,7 @@ export default function Engine() {
   let normalMatter = true;
   let normalSpace = true;
   let anim = 0;
+  persist.setDist(0);
 
   // Game objects
   const player = new Player(this);
@@ -46,7 +47,8 @@ export default function Engine() {
 
   // Game events
   bus.on('hit', () => {
-    scene.transition(4);
+    persist.setDist(anim);
+    scene.transition(3);
   })
 
   const terrainGen = () => {
@@ -106,26 +108,35 @@ export default function Engine() {
 
   let tickNum = 2;
   const generateObstacles = () => {
+    let likelihood = Math.min(0.25 + 1.0 / (tickNum * 0.05), 0.66);
     // Matter wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       let lane = 0;
       if (Math.random() > 0.5) {
         lane = 1;
       }
       gameobjects.add(new FixedWall(this, tickNum, lane));
+      if (tickNum < 15) {
+        tickNum += 1;
+        return;
+      }
     }
 
     // Space wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       let mode = 0;
       if (Math.random() > 0.5) {
         mode = 1;
       }
       gameobjects.add(new StretchWall(this, tickNum, mode));
+      if (tickNum < 15) {
+        tickNum += 1;
+        return;
+      }
     }
 
     // Time wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       gameobjects.add(new TimeWall(this, tickNum, Math.random()));
     }
 
@@ -134,8 +145,9 @@ export default function Engine() {
 
   let ticker = 0;
   this.update = (dT) => {
-    anim += dT * 0.3;
-    ticker += dT * 0.3 * 3;
+    let rate = 0.3 + (tickNum / 500.0);
+    anim += dT * rate;
+    ticker += dT * rate * 3;
     if (ticker > 1) {
       generateObstacles();
       ticker -= 1;

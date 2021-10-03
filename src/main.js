@@ -19,7 +19,7 @@ scene.init();
     if (dT > 0.3) { dT = 0.3; }
 
     // Clear frame
-    canvas.ctx.fillStyle = '#225';
+    canvas.ctx.fillStyle = '#222';
     canvas.ctx.fillRect(0, 0, canvas.width(), canvas.height());
 
     // Update, render, and queue game object removal

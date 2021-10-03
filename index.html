@@ -89,150 +89,7 @@ function transition$1(duration, fadeOut) {
   };
 }
 
-function drawStars(ctx, x, y, vx, vy) {
-  const w = width();
-  const h = height();
-  const N = Math.sqrt(w * h) / 10;
-  ctx.beginPath();
-  ctx.strokeStyle = '#aaa';
-  ctx.fillStyle = '#ddd';
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i < N; i++) {
-    let s = 1 + (Math.sin(i * i * 1217 + i * i * i * 983) * 0.5 + 0.5) * 5;
-    let ax = (1234918 * i * i + i * i * i * i * 2291722 + x * s) % (w+100)-50;
-    let ay = (3000182 * i * i * i * i + i * i * i * i * i * 500291 + y * s) % (h+100)-50;
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(ax+vx*s, ay+vy*s);
-    ctx.fillRect(ax-1, ay-1, 2, 2);
-  }
-  ctx.stroke();
-}
-
-function drawCharPlayer(ctx) {
-  var w = width();
-  var h = height();
-  var s = Math.min(h * 0.075, w * 0.1);
-  ctx.save();
-  ctx.translate(s*1.2, h + Math.sin(Date.now()*0.003)*s*0.1);
-  // Torso
-  ctx.fillStyle='#bbb';
-  ctx.beginPath();
-  ctx.arc(-s*0.1, s*0.1, s*1.4, 0, 6.29);
-  ctx.fill();
-  // Head
-  ctx.fillStyle='#eee';
-  ctx.beginPath();
-  ctx.arc(0, -s*1.9, s, 0, 6.29);
-  ctx.fill();
-  // Visor
-  ctx.fillStyle='#3af';
-  ctx.fillRect(-s*0.1,-s*2.1,s,s*0.4);
-  ctx.restore();
-}
-
-function drawCharZoren(ctx, col='#3b5') {
-  var w = width();
-  var h = height();
-  var s = Math.min(h * 0.075, w * 0.1);
-  ctx.save();
-  ctx.translate(w-s*1.2, h+Math.sin(Date.now()*0.0021+3)*s*0.1);
-  // Torso
-  ctx.fillStyle=col;//'#8a8';
-  ctx.fillRect(-s*0.5,-s*1.5,s*1.4,s*2);
-  ctx.fillStyle='#666';
-  ctx.fillRect(-s*0.2,-s*1.5,s*0.1,s*2);
-  ctx.fillRect(-s*0.35,-s*0.8,s*0.1,s*0.1);
-  ctx.fillRect(-s*0.35,-s*0.6,s*0.1,s*0.1);
-  // Head
-  ctx.fillStyle='#fdb';
-  ctx.beginPath();
-  ctx.arc(0, -s*1.8, s, 0, 6.29);
-  ctx.fill();
-  // Glasses
-  ctx.fillStyle='#333';
-  ctx.fillRect(-s*1,-s*1.95,s*1.6,s*0.1);
-  ctx.fillStyle=col;
-  ctx.beginPath();
-  ctx.arc(-s*0.8,-s*1.8,s*0.3,0,6.29);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(-s*0.1,-s*1.8,s*0.3,0,6.29);
-  ctx.fill();
-  ctx.restore();
-}
-
-var lineBreaks = (ctx, txt, maxWidth) => {
-  var str = '';
-  var lines = [];
-  for (let i = 0; i < txt.length; i++) {
-    str += txt[i];
-    if (ctx.measureText(str).width > maxWidth) {
-      var ls = str.lastIndexOf(' ');
-      var ps = str.substring(0, ls);
-      lines.push(ps.trim());
-      str = str.substring(ls);
-    }
-  }
-  if (str.trim().length > 0) {
-    lines.push(str.trim());
-  }
-  return lines;
-};
-var getTextLines = (ctx, txt, w, h, maxWidth) => {
-  var r = textLineMap[txt];
-  if (r) {
-    if (r.w == w && r.h == h) {
-      return r.lines;
-    }
-  }
-  var l = lineBreaks(ctx, txt, maxWidth);
-  textLineMap[txt] = {w,h,lines:l};
-  return l;
-};
-var textLineMap = {};
-
-function drawDialogBox(ctx, title, txt) {
-  var w = width();
-  var h = height();
-  var s = Math.min(h * 0.075, w * 0.1);
-  var ts = Math.max(w * 0.09, h * 0.08);
-  ctx.save();
-  // Dialog box
-  ctx.fillStyle = '#236';
-  ctx.strokeStyle = '#3af';
-  ctx.lineWidth = s * 0.1;
-  ctx.beginPath();
-  ctx.moveTo(s*2.8,h*0.75);
-  ctx.lineTo(w-s*2.8,h*0.75);
-  ctx.lineTo(w-s*2.8,h-s*1.8);
-  ctx.lineTo(w-s*2.5,h-s*1.6);
-  ctx.lineTo(w-s*2.8,h-s*1.4);
-  ctx.lineTo(w-s*2.8,h-s*0.2);
-  ctx.lineTo(s*2.8,h-s*0.2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  // title text
-  ctx.fillStyle='#ff3';
-  ctx.textAlign='left';
-  ctx.font=`${ts*0.3}px monospace`;
-  ctx.fillText(title, s*3, h*0.75+ts*0.25);
-
-  // title text
-  ctx.fillStyle='#fff';
-  ctx.textAlign='left';
-  ctx.font=`${ts*0.25}px monospace`;
-
-  var lines = getTextLines(ctx, txt, w, h, w - s*6);
-  for (let i = 0; i < lines.length; i++) {
-    ctx.fillText(lines[i], s*3, h*0.75+ts*(2.1 + i)*0.3);
-  }
-  // Split line text
-  ctx.restore();
-}
-
-function StartButton(txt = 'Liftoff') {
+function StartButton(txt = 'Begin') {
 
   var fn = ({x, y}) => {
     var w = width();
@@ -502,15 +359,15 @@ function Text(str, x, y, color = '#fff', size='1', align='left') {
 
 function MainMenu() {
   // Title card
-  add(new Text('UNSTABLE EINSTEIN', ()=>width()/2, ()=>height()*0.4, '#7f7', 1, 'center'));
+  add(new Text('UNSTABLE EINSTEIN', ()=>width()/2, ()=>height()*0.2, '#77f', 1, 'center'));
 
   // Push to star pulser
-  var pushToStart = new Text('[ Press to start ]', ()=>width()/2, ()=>height()*0.6, '#7f7', 0.5, 'center');
+  var pushToStart = new Text('[ Press to start ]', ()=>width()/2, ()=>height()*0.35, '#77f', 0.5, 'center');
   pushToStart.ecs = [pulse((x) => {pushToStart.size = x;}, 0.45, 0.55, 1)];
   add(pushToStart);
 
   // By me :)
-  add(new Text('by Ariel Wexler', ()=>width()/2, ()=>height()*0.8, '#777', 0.35, 'center'));
+  add(new Text('by Ariel Wexler', ()=>width()/2, ()=>height()*0.5, '#fff', 0.35, 'center'));
 
   // Touch anywhere to go to intro
   var fn = () => {
@@ -518,44 +375,56 @@ function MainMenu() {
     bus.off('tap', fn);
   };
   bus.on('tap', fn);
+
+  this.render = (ctx) => {
+    const w = width();
+    const h = height();
+    const x = w * 0.3;
+    const y = h * 1.02;
+    ctx.save();
+    let a = Date.now() * 0.006;
+    var s = w * 0.2;
+    ctx.translate(x, y);
+    let breath = Math.cos(a * 0.7);
+    let th = -s * (1.95 + breath * 0.05);
+    let tw = s * (0.5 + (1 - breath) * 0.02);
+    // Body
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(-tw, 0, 2*tw, th);
+    // Hair
+    ctx.beginPath();
+    ctx.moveTo(s*0.5, th + 2);
+    for (let i = 0; i < 10; i++) {
+      let p = i / 10;
+      let dx2 = Math.cos(p * 5) * (tw + s * 0.25) - s * 0.25;
+      let dx = Math.cos(p * 5 + Math.cos(a+i) * 0.1) * s * 0.2 + dx2;
+      let dy2 = Math.sin(p * 4.8) * s * 0.5 - s * 0.4 * p;
+      let dy = Math.sin(p * 4.8) * s * 0.2 + dy2;
+      ctx.lineTo(dx, th + 2 - dy);
+      ctx.lineTo(dx2, th + 2 - dy2);
+    }
+    ctx.lineTo(-tw, th + s * 0.3);
+    ctx.closePath();
+    ctx.fill();
+    // Glasses
+    ctx.beginPath();
+    ctx.fillStyle = '#7af';
+    ctx.arc(tw-s*0.05,th+s * 0.8, s * 0.25, 0,6.29);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(tw-s*0.55,th+s * 0.8, s * 0.25, 0,6.29);
+    ctx.fill();
+    ctx.restore();
+  };
 }
 
 var persist = (() => {
-  var minerals = 0;
-  var level = 0;
-  var handSize = 3;
-  var maxEnergy = 5;
-  var maxShield = 3;
-  var deck = [];
+  var dist = 0;
 
   var a = {
-    reset: () => {
-      minerals = 0;
-      level = 0;
-      handSize = 3;
-      maxEnergy = 5;
-      maxShield = 3;
-    },
-
-    getMinerals: () => minerals,
-    addMineral: (m) => minerals += m,
-
-    getLevel: () => level,
-    setLevel: (l) => level = l,
-
-    getHandSize: () => handSize,
-    setHandSize: (e) => handSize = e,
-
-    getMaxEnergy: () => maxEnergy,
-    setMaxEnergy: (e) => maxEnergy = e,
-
-    getMaxShield: () => maxShield,
-    setMaxShield: (e) => maxShield = e,
-
-    getDeck: () => deck,
-    addToDeck: (c) => deck.push(c),
+    setDist: (a) => {dist = a;},
+    getDist: (a) => {return dist;}
   };
-  a.reset();
 
   return a;
 })();
@@ -564,9 +433,51 @@ function Intro() {
   add(new Text('Instructions', ()=>width()*0.03, ()=>width()*0.05, '#fff', 0.5, 'left'));
   add(new StartButton());
   bus.on('start', () => {
-    persist.reset();
     transition(2);
   });
+
+  this.render = (ctx) => {
+    const w = width();
+    const h = height() * 0.8;
+
+    const BW = w / 30;
+    const BH = h / 10;
+    ctx.save();
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = this.color;
+    ctx.font = `${w * 0.035}px monospace`;
+
+    // RED OBSTACLES
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(w/4 - BW/2-BH/3, h/3 - BH, BW, BH);
+    ctx.fillRect(w/4 - BW/2+BH/3, h/3, BW, BH);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Avoid red obstacles by', w*3/8, h/3-BH/4);
+    ctx.fillText('destabilizing gravity.', w*3/8, h/3+BH/4);
+
+    // GREEN OBSTACLES
+    ctx.fillStyle = '#0e0';
+    ctx.fillRect(w/4 - BW/2-BH/3, h*2/3 - BH / 10, BW, BH/5);
+    ctx.fillRect(w/4 - BW/2+BH/3, h*2/3- BH, BW, BH*2);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Avoid green obstacles by', w*3/8, h*2/3-BH/4);
+    ctx.fillText('destabilizing space.', w*3/8, h*2/3+BH/4);
+
+    // BLUE OBSTACLES
+    ctx.fillStyle = '#00f';
+    ctx.fillRect(w/4 - BW/2-BH/3, h - BH, BW, BH/5);
+    ctx.fillRect(w/4 - BW/2-BH/3, h + BH, BW, -BH/5);
+    ctx.fillRect(w/4 - BW/2+BH/3, h - BH, BW, BH*0.95);
+    ctx.fillRect(w/4 - BW/2+BH/3, h + BH, BW, -BH*0.95);
+
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Avoid blue obstacles by', w*3/8, h-BH/4);
+    ctx.fillText('destabilizing time.', w*3/8, h+BH/4);
+
+    ctx.restore();
+  };
 }
 
 function Player(engine) {
@@ -757,6 +668,7 @@ function Engine() {
   let normalMatter = true;
   let normalSpace = true;
   let anim = 0;
+  persist.setDist(0);
 
   // Game objects
   const player = new Player(this);
@@ -782,7 +694,8 @@ function Engine() {
 
   // Game events
   bus.on('hit', () => {
-    transition(4);
+    persist.setDist(anim);
+    transition(3);
   });
 
   this.getScale = () => {
@@ -838,26 +751,35 @@ function Engine() {
 
   let tickNum = 2;
   const generateObstacles = () => {
+    let likelihood = Math.min(0.25 + 1.0 / (tickNum * 0.05), 0.66);
     // Matter wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       let lane = 0;
       if (Math.random() > 0.5) {
         lane = 1;
       }
       add(new FixedWall(this, tickNum, lane));
+      if (tickNum < 15) {
+        tickNum += 1;
+        return;
+      }
     }
 
     // Space wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       let mode = 0;
       if (Math.random() > 0.5) {
         mode = 1;
       }
       add(new StretchWall(this, tickNum, mode));
+      if (tickNum < 15) {
+        tickNum += 1;
+        return;
+      }
     }
 
     // Time wall
-    if (Math.random() > 0.5) {
+    if (Math.random() > likelihood) {
       add(new TimeWall(this, tickNum, Math.random()));
     }
 
@@ -866,8 +788,9 @@ function Engine() {
 
   let ticker = 0;
   this.update = (dT) => {
-    anim += dT * 0.3;
-    ticker += dT * 0.3 * 3;
+    let rate = 0.3 + (tickNum / 500.0);
+    anim += dT * rate;
+    ticker += dT * rate * 3;
     if (ticker > 1) {
       generateObstacles();
       ticker -= 1;
@@ -995,95 +918,27 @@ function Engine() {
   };
 }
 
-const planets = [
-  'Tenadu',
-  'Nurosto Prime',
-  'Worlax',
-  'Mektrov Zero',
-  'Cytoxia',
-  'Broggendor',
-  'Voitec',
-  'Helion',
-  'Earth (Remnants)',
-  'Yonzi Mata',
-  'Streva Gateway',
-  'Lumatorr',
-  'Desela',
-  'Korva-6'
-];
-
 function GameOver() {
-  var currLevel = persist.getLevel();
 
   // Title card
-  add(new Text('SHUTTLEDECK', ()=>width()/2, ()=>height()*0.2, '#fff', 1, 'center'));
+  add(new Text('UNSTABLE EINSTEIN', ()=>width()/2, ()=>height()*0.2, '#77f', 1, 'center'));
 
   // Game over :(
-  add(new Text('Game Over', ()=>width()/2, ()=>height()*0.35, '#f55', 1, 'center'));
-  add(new Text(`Exploded approaching planet ${planets[currLevel]}`, ()=>width()/2, ()=>height()*0.6, '#f55', 0.4, 'center'));
+  add(new Text('Game Over', ()=>width()/2, ()=>height()*0.4, '#f55', 1, 'center'));
+  let dist = 1 + parseInt(persist.getDist() * 10);
+  add(new Text('Einstein ran ' + dist + ' meters', ()=>width()/2, ()=>height()*0.55, '#f55', 0.4, 'center'));
 
   // Push to play again
-  add(new Text('[ Press to retry ]', ()=>width()/2, ()=>height()*0.8, '#777', 0.5, 'center'));
+  add(new Text('[ Press to retry ]', ()=>width()/2, ()=>height()*0.8, '#77f', 0.5, 'center'));
   var fn = () => {
     transition(1);
     bus.off('tap', fn);
   };
   bus.on('tap', fn);
-
-  // Starfield
-  this.render = (ctx) => {
-    var w = width();
-    var h = height();
-    var uiScale = Math.min(h * 0.03, w*0.03);
-    drawStars(ctx,-Date.now()*0.03,0,3,0);
-
-    // Progress meter
-    ctx.lineWidth = uiScale * 0.2;
-
-    // bg line
-    ctx.strokeStyle='#555';
-    ctx.beginPath();
-    ctx.moveTo(w/2 - w*14/36, h/2);
-    ctx.lineTo(w/2 + w*14/36, h/2);
-    ctx.stroke();
-
-    for (let i = 0; i < planets.length + 1; i++) {
-      var x = (i - 7) * w / 18 + w/2;
-      if (i <= currLevel) {
-        ctx.beginPath();
-        ctx.arc(x, h*0.5,uiScale*0.6,0,6.29);
-        ctx.fillStyle='#fff';
-        ctx.fill();
-      } else {
-        ctx.beginPath();
-        ctx.arc(x, h*0.5,uiScale*0.5,0,6.29);
-        ctx.fillStyle='#000';
-        ctx.strokeStyle='#f55';
-        ctx.fill();
-        ctx.stroke();
-      }
-    }
-  };
-}
-
-function Win() {
-  add(new Text('Planet Korva-6', ()=>width()*0.03, ()=>width()*0.05, '#fff', 0.5, 'left'));
-  add(new Text('Package Delivered!', ()=>width()/2, ()=>height()/2, '#5f5', 0.6, 'center'));
-  add(new StartButton('Main Menu'));
-  bus.on('start', () => { transition(0); });
-
-  this.render = (ctx) => {
-    drawCharPlayer(ctx);
-    drawCharZoren(ctx, '#f55');
-    drawDialogBox(ctx,
-      'Professor Quinn',
-      'Is that a Xenotransponder?? My brother Zorn must have sent this. Thank you, Courier!'
-    );
-  };
 }
 
 // Init/Reset game
-function init() { bus.emit('scene', 2); }
+function init() { bus.emit('scene', 3); }
 
 // Go to scene number
 function transition(s) {
@@ -1118,11 +973,8 @@ function transition(s) {
     // [SCENE = 2] GAME
     if (scene == 2) { add(new Engine()); audio.bgRocket(); }
 
-    // [SCENE = 4] LOSE SCREEN
-    if (scene == 4) { add(new GameOver()); }
-
-    // [SCENE = 5] WIN SCREEN
-    if (scene == 5) { add(new Win()); }
+    // [SCENE = 3] LOSE SCREEN
+    if (scene == 3) { add(new GameOver()); }
   };
 
   bus.on('scene', sceneConfig);
@@ -1167,7 +1019,7 @@ init();
     if (dT > 0.3) { dT = 0.3; }
 
     // Clear frame
-    ctx.fillStyle = '#225';
+    ctx.fillStyle = '#222';
     ctx.fillRect(0, 0, width(), height());
 
     // Update, render, and queue game object removal

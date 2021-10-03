@@ -11,10 +11,9 @@ import MainMenu from './mainmenu.js';
 import Intro from './intro.js';
 import Engine from './engine.js';
 import GameOver from './gameover.js';
-import Win from './win.js';
 
 // Init/Reset game
-export function init() { bus.emit('scene', 2); }
+export function init() { bus.emit('scene', 3); }
 
 // Go to scene number
 export function goto(s) { bus.emit('scene', s); }
@@ -52,11 +51,8 @@ export function transition(s) {
     // [SCENE = 2] GAME
     if (scene == 2) { gameobjects.add(new Engine()); audio.bgRocket(); }
 
-    // [SCENE = 4] LOSE SCREEN
-    if (scene == 4) { gameobjects.add(new GameOver()); }
-
-    // [SCENE = 5] WIN SCREEN
-    if (scene == 5) { gameobjects.add(new Win()); }
+    // [SCENE = 3] LOSE SCREEN
+    if (scene == 3) { gameobjects.add(new GameOver()); }
   };
 
   bus.on('scene', sceneConfig);
