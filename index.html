@@ -4,14 +4,14 @@ ctx.imageSmoothingEnabled = true;
 ctx.lineCap='round';
 ctx.lineJoin='round';
 
-var w$1, h;
-function width() { return w$1; }
+var w, h;
+function width() { return w; }
 function height() { return h; }
 
 function resize() {
   canvas.width = window.innerWidth * 1;
   canvas.height = window.innerHeight * 1;
-  w$1 = canvas.width;
+  w = canvas.width;
   h = canvas.height;
 }resize();
 window.addEventListener('resize', resize);
@@ -575,6 +575,9 @@ function Player(engine) {
   let vy = 0;
   let normalizedY = 0;
 
+  this.getX = () => { return x; };
+  this.getY = () => { return y; };
+
   this.update = (dT) => {
     x = engine.getScale() * 80;
 
@@ -583,7 +586,7 @@ function Player(engine) {
     const bl = engine.bottomLimit();
 
     const g = engine.getGravity();
-    vy -= g * dT * 4;
+    vy -= g * dT * 6;
     normalizedY += vy * dT;
 
     if (normalizedY < 0) { normalizedY = 0; vy = 0; }
@@ -632,6 +635,41 @@ function Player(engine) {
   };
 }
 
+function FixedWall(engine, tick, lane) {
+  console.log(engine);
+  let x = engine.getTickX(tick);
+  let y = engine.getLaneY(lane);
+
+  this.update = (dT) => {
+    const s = engine.getScale() * 60;
+    x = engine.getTickX(tick);
+    y = engine.getLaneY(lane);
+    if (x < -100) {
+      this.destroyed = true;
+    }
+    const px = engine.getPlayerX();
+    const py = engine.getPlayerY();
+    if (px > x - s/2 && px < x + s / 2) {
+      const midY = engine.getLaneY(0.5);
+      if (lane == 0 && py < midY) {
+        bus.emit('hit');
+      }
+      if (lane == 1 && py > midY) {
+        bus.emit('hit');
+      }
+    }
+  };
+  this.render = (ctx) => {
+    ctx.save();
+    const s = engine.getScale() * 60;
+    const h = engine.laneHeight();
+    ctx.translate(x, y);
+    ctx.fillStyle='#f00';
+    ctx.fillRect(-s/2, -h/2, s, h);
+    ctx.restore();
+  };
+}
+
 function Engine() {
   // Game dimensions
   const railWidth = 0.1;
@@ -665,12 +703,19 @@ function Engine() {
     }
   });
 
+  // Game events
+  bus.on('hit', () => {
+    transition(4);
+  });
+
   this.getScale = () => {
     return width() / 800.0;
   };
 
-  this.update = (dT) => {
-    anim += dT * 0.2;
+  this.laneHeight = () => {
+    const TL = this.topLimit();
+    const BL = this.bottomLimit();
+    return (BL - TL) / 2;
   };
 
   this.topLimit = () => {
@@ -684,7 +729,18 @@ function Engine() {
   };
 
   this.getTickX = (tick) => {
-    return w - tick * w / 4 - anim * w;
+    const w = width();
+    return w - tick * w / 3 - anim * w;
+  };
+
+  this.getPlayerX = () => { return player.getX(); };
+  this.getPlayerY = () => { return player.getY(); };
+
+  this.getLaneY = (lane) => {
+    const TL = this.topLimit();
+    this.bottomLimit();
+    const LW = this.laneHeight();
+    return TL + lane * LW + LW/2;
   };
 
   this.getGravity = () => {
@@ -694,6 +750,13 @@ function Engine() {
       return -1;
     }
   };
+
+  this.update = (dT) => {
+    anim += dT * 0.3;
+  };
+
+  add(new FixedWall(this, 0, 0));
+  add(new FixedWall(this, 1, 1));
 
   this.render = (ctx) => {
     // Screen dimensions
@@ -707,9 +770,9 @@ function Engine() {
     const TL = this.topLimit();
     ctx.fillRect(0, 0, w, TL);
     ctx.fillRect(0, this.bottomLimit(), w, railWidth * h);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       ctx.fillStyle='#112';
-      ctx.fillRect(w - (i * w / 4 + anim * w) % w, 0, 5, TL);
+      ctx.fillRect(w - (i * w / 3 + anim * w) % w, 0, 5, TL);
     }
 
     // Controls area

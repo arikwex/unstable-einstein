@@ -7,6 +7,7 @@ import bus from './bus.js';
 import Poof from './poof.js';
 
 import Player from './player.js';
+import FixedWall from './fixed-wall.js';
 
 export default function Engine() {
   // Game dimensions
@@ -41,6 +42,11 @@ export default function Engine() {
     }
   });
 
+  // Game events
+  bus.on('hit', () => {
+    scene.transition(4);
+  })
+
   const terrainGen = () => {
     // Build next incremental terrain
   }
@@ -49,9 +55,11 @@ export default function Engine() {
     return canvas.width() / 800.0;
   }
 
-  this.update = (dT) => {
-    anim += dT * 0.2;
-  };
+  this.laneHeight = () => {
+    const TL = this.topLimit();
+    const BL = this.bottomLimit();
+    return (BL - TL) / 2;
+  }
 
   this.topLimit = () => {
     let h = canvas.height();
@@ -64,7 +72,18 @@ export default function Engine() {
   }
 
   this.getTickX = (tick) => {
-    return w - tick * w / 4 - anim * w;
+    const w = canvas.width();
+    return w - tick * w / 3 - anim * w;
+  }
+
+  this.getPlayerX = () => { return player.getX(); }
+  this.getPlayerY = () => { return player.getY(); }
+
+  this.getLaneY = (lane) => {
+    const TL = this.topLimit();
+    const BL = this.bottomLimit();
+    const LW = this.laneHeight();
+    return TL + lane * LW + LW/2;
   }
 
   this.getGravity = () => {
@@ -74,6 +93,13 @@ export default function Engine() {
       return -1;
     }
   }
+
+  this.update = (dT) => {
+    anim += dT * 0.3;
+  };
+
+  gameobjects.add(new FixedWall(this, 0, 0));
+  gameobjects.add(new FixedWall(this, 1, 1));
 
   this.render = (ctx) => {
     // Screen dimensions
@@ -87,9 +113,9 @@ export default function Engine() {
     const TL = this.topLimit();
     ctx.fillRect(0, 0, w, TL);
     ctx.fillRect(0, this.bottomLimit(), w, railWidth * h);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       ctx.fillStyle='#112';
-      ctx.fillRect(w - (i * w / 4 + anim * w) % w, 0, 5, TL);
+      ctx.fillRect(w - (i * w / 3 + anim * w) % w, 0, 5, TL);
     }
 
     // Controls area

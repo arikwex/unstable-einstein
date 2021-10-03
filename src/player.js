@@ -9,6 +9,9 @@ function Player(engine) {
   let vy = 0;
   let normalizedY = 0;
 
+  this.getX = () => { return x; }
+  this.getY = () => { return y; }
+
   this.update = (dT) => {
     x = engine.getScale() * 80;
 
@@ -17,7 +20,7 @@ function Player(engine) {
     const bl = engine.bottomLimit();
 
     const g = engine.getGravity();
-    vy -= g * dT * 4;
+    vy -= g * dT * 6;
     normalizedY += vy * dT;
 
     if (normalizedY < 0) { normalizedY = 0; vy = 0; }
