@@ -1,5 +1,3 @@
-import cards from './cards.js';
-
 export default (() => {
   var minerals = 0;
   var level = 0;
@@ -15,11 +13,6 @@ export default (() => {
       handSize = 3;
       maxEnergy = 5;
       maxShield = 3;
-      deck = [
-        cards[0],cards[0],cards[0],
-        cards[1],cards[1],cards[1],
-        cards[2],cards[2],cards[2],
-      ];
     },
 
     getMinerals: () => minerals,
