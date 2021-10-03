@@ -730,7 +730,7 @@ function Engine() {
 
   this.getTickX = (tick) => {
     const w = width();
-    return w - tick * w / 3 - anim * w;
+    return w + tick * w / 3 - anim * w;
   };
 
   this.getPlayerX = () => { return player.getX(); };
@@ -751,12 +751,27 @@ function Engine() {
     }
   };
 
-  this.update = (dT) => {
-    anim += dT * 0.3;
+  let tickNum = 2;
+  const generateObstacles = () => {
+    if (Math.random() > 0.15) {
+      let lane = 0;
+      if (Math.random() > 0.5) {
+        lane = 1;
+      }
+      add(new FixedWall(this, tickNum, lane));
+    }
+    tickNum += 1;
   };
 
-  add(new FixedWall(this, 0, 0));
-  add(new FixedWall(this, 1, 1));
+  let ticker = 0;
+  this.update = (dT) => {
+    anim += dT * 0.3;
+    ticker += dT * 0.3 * 3;
+    if (ticker > 1) {
+      generateObstacles();
+      ticker -= 1;
+    }
+  };
 
   this.render = (ctx) => {
     // Screen dimensions
