@@ -8,7 +8,7 @@ function FixedWall(engine, tick, lane) {
 
   this.update = (dT) => {
     const s = engine.getScale() * 60
-    x = engine.getTickX(tick);
+    x = engine.getTickX(tick-0.1);
     y = engine.getLaneY(lane);
     if (x < -100) {
       this.destroyed = true;
