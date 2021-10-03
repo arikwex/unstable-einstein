@@ -17,6 +17,7 @@ export default function Engine() {
   let normalTime = true;
   let normalMatter = true;
   let normalSpace = true;
+  let anim = 0;
 
   // Game objects
   const player = new Player(this);
@@ -49,6 +50,7 @@ export default function Engine() {
   }
 
   this.update = (dT) => {
+    anim += dT * 0.2;
   };
 
   this.topLimit = () => {
@@ -61,6 +63,18 @@ export default function Engine() {
     return h - (railWidth + buttonWidth) * h;
   }
 
+  this.getTickX = (tick) => {
+    return w - tick * w / 4 - anim * w;
+  }
+
+  this.getGravity = () => {
+    if (normalMatter) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+
   this.render = (ctx) => {
     // Screen dimensions
     const w = canvas.width();
@@ -70,8 +84,13 @@ export default function Engine() {
 
     // Bottom and top rails
     ctx.fillStyle='#000';
-    ctx.fillRect(0, 0, w, this.topLimit());
+    const TL = this.topLimit();
+    ctx.fillRect(0, 0, w, TL);
     ctx.fillRect(0, this.bottomLimit(), w, railWidth * h);
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle='#112';
+      ctx.fillRect(w - (i * w / 4 + anim * w) % w, 0, 5, TL);
+    }
 
     // Controls area
     ctx.fillStyle='#222';

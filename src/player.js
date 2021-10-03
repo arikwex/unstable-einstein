@@ -6,14 +6,33 @@ function Player(engine) {
   let anim = 0;
   let x = canvas.width() * 0.2;
   let y = canvas.height() * 0.75;
+  let vy = 0;
+  let normalizedY = 0;
 
   this.update = (dT) => {
+    x = engine.getScale() * 80;
+
+    // Gravitation behavior
+    const tl = engine.topLimit();
+    const bl = engine.bottomLimit();
+
+    const g = engine.getGravity();
+    vy -= g * dT * 4;
+    normalizedY += vy * dT;
+
+    if (normalizedY < 0) { normalizedY = 0; vy = 0; }
+    if (normalizedY > 1) { normalizedY = 1; vy = 0; }
+
+    y = tl * normalizedY + bl * (1 - normalizedY);
   }
   this.render = (ctx) => {
     ctx.save();
     let a = Date.now() * 0.01;
     var s = engine.getScale() * 30;
     ctx.translate(x, y);
+    if (normalizedY > 0.5) {
+      ctx.scale(1, -1);
+    }
     let breath = Math.cos(a * 0.7);
     let th = -s * (1.95 + breath * 0.05);
     let tw = s * (0.5 + (1 - breath) * 0.02);
