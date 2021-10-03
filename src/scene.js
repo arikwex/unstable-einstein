@@ -13,7 +13,7 @@ import Engine from './engine.js';
 import GameOver from './gameover.js';
 
 // Init/Reset game
-export function init() { bus.emit('scene', 3); }
+export function init() { bus.emit('scene', 0); }
 
 // Go to scene number
 export function goto(s) { bus.emit('scene', s); }
