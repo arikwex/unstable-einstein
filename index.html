@@ -1,4 +1,4 @@
-<html><title>SHUTTLEDECK</title><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" sizes="64x64"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"><style>canvas{width:100%;height:100%;}body{margin:0;background:#000;}</style><canvas><script>const canvas = document.getElementsByTagName('canvas')[0];
+<html><title>UNSTABLE EINSTEIN</title><link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" sizes="64x64"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"><style>canvas{width:100%;height:100%;}body{margin:0;background:#000;}</style><canvas><script>const canvas = document.getElementsByTagName('canvas')[0];
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = true;
 ctx.lineCap='round';
@@ -440,14 +440,14 @@ function Intro() {
     const w = width();
     const h = height() * 0.8;
 
-    const BW = w / 30;
+    const BW = w / 40;
     const BH = h / 10;
     ctx.save();
 
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = this.color;
-    ctx.font = `${w * 0.035}px monospace`;
+    ctx.font = `${w * 0.03}px monospace`;
 
     // RED OBSTACLES
     ctx.fillStyle = '#f00';
@@ -550,6 +550,18 @@ function FixedWall(engine, tick, lane) {
   let x = engine.getTickX(tick);
   let y = engine.getLaneY(lane);
 
+  const canHurtPlayer = () => {
+    const py = engine.getPlayerY();
+    const midY = engine.getLaneY(0.5);
+    if (lane == 0 && py < midY) {
+      return true;
+    }
+    if (lane == 1 && py > midY) {
+      return true;
+    }
+    return false;
+  };
+
   this.update = (dT) => {
     const s = engine.getScale() * 60;
     x = engine.getTickX(tick-0.1);
@@ -558,13 +570,9 @@ function FixedWall(engine, tick, lane) {
       this.destroyed = true;
     }
     const px = engine.getPlayerX();
-    const py = engine.getPlayerY();
+    engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      const midY = engine.getLaneY(0.5);
-      if (lane == 0 && py < midY) {
-        bus.emit('hit');
-      }
-      if (lane == 1 && py > midY) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -574,7 +582,11 @@ function FixedWall(engine, tick, lane) {
     const s = engine.getScale() * 60;
     const h = engine.laneHeight();
     ctx.translate(x, y);
-    ctx.fillStyle='#f00';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#f00';
+    } else {
+      ctx.fillStyle='rgba(255,0,0,0.25)';
+    }
     ctx.fillRect(-s/2, -h/2, s, h);
     ctx.restore();
   };
@@ -584,6 +596,10 @@ function StretchWall(engine, tick, mode) {
   let x = engine.getTickX(tick);
   let y = engine.getLaneY(0.5);
   let currSize = 0;
+
+  const canHurtPlayer = () => {
+    return currSize > 0.7;
+  };
 
   this.update = (dT) => {
     const s = engine.getScale() * 60;
@@ -602,7 +618,7 @@ function StretchWall(engine, tick, mode) {
     const px = engine.getPlayerX();
     engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      if (currSize > 0.7) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -612,7 +628,11 @@ function StretchWall(engine, tick, mode) {
     const s = engine.getScale() * 60;
     const h = engine.laneHeight() * 2 * (0.9 * currSize + 0.1);
     ctx.translate(x, y);
-    ctx.fillStyle='#0e0';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#0e0';
+    } else {
+      ctx.fillStyle='rgba(0,255,0,0.25)';
+    }
     ctx.fillRect(-s/2, -h/2, s, h);
     ctx.restore();
   };
@@ -622,6 +642,10 @@ function TimeWall(engine, tick, mode) {
   let x = engine.getTickX(tick);
   let currSize = 0;
   let anim = mode * 10;
+
+  const canHurtPlayer = () => {
+    return currSize > 0.2;
+  };
 
   this.update = (dT) => {
     const s = engine.getScale() * 60;
@@ -639,7 +663,7 @@ function TimeWall(engine, tick, mode) {
     const px = engine.getPlayerX();
     engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      if (currSize > 0.2) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -651,7 +675,11 @@ function TimeWall(engine, tick, mode) {
     let ty = engine.topLimit();
     let by = engine.bottomLimit();
     ctx.translate(x, 0);
-    ctx.fillStyle='#00f';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#00f';
+    } else {
+      ctx.fillStyle='rgba(0,0,255,0.25)';
+    }
     ctx.fillRect(-s/2, ty, s, h + 5);
     ctx.fillRect(-s/2, by, s, - 5 - h);
     ctx.restore();
@@ -797,12 +825,33 @@ function Engine() {
     }
   };
 
+  const drawSwitch = (ctx, x, y, s, state) => {
+    ctx.fillStyle = '#222';
+    ctx.fillRect(x - s, y - s * 1.5, s * 2, s * 3);
+    if (state) {
+      ctx.fillStyle = '#666';
+      ctx.fillRect(x - s*0.6, y - s * 4, s * 1.2, s * 4);
+      ctx.beginPath();
+      ctx.arc(x, y - s * 4, s, 0, 6.29);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#777';
+      ctx.fillRect(x - s*0.6, y, s * 1.2, s * 4);
+      ctx.beginPath();
+      ctx.arc(x, y + s * 4, s, 0, 6.29);
+      ctx.fill();
+    }
+  };
+
   this.render = (ctx) => {
     // Screen dimensions
     const w = width();
     const h = height();
     const bh = buttonWidth * h;
     const s = Math.min(bh * 0.2, w * 0.04);
+    const switchX = w * 0.28;
+    const switchY = bh * 0.65;
+    const switchSZ = Math.min(w * 0.015, bh * 0.07);
 
     // Bottom and top rails
     ctx.fillStyle='#000';
@@ -822,10 +871,10 @@ function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalSpace) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#363';
+      ctx.fillStyle = '#3a3';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#232';
+      ctx.fillStyle = '#262';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -848,9 +897,11 @@ function Engine() {
     if (normalSpace) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Space', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
-      ctx.fillText('Stretched Space', w / 6, bh * 0.2);
+      ctx.fillStyle = '#777';
+      ctx.fillText('Warped Space', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
 
@@ -858,10 +909,10 @@ function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalMatter) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#633';
+      ctx.fillStyle = '#a33';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#322';
+      ctx.fillStyle = '#622';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -877,9 +928,11 @@ function Engine() {
     if (normalMatter) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Matter', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
+      ctx.fillStyle = '#777';
       ctx.fillText('Anti Matter', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
 
@@ -887,10 +940,10 @@ function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalTime) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#336';
+      ctx.fillStyle = '#33a';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#223';
+      ctx.fillStyle = '#226';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -910,9 +963,11 @@ function Engine() {
     if (normalTime) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Time', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
+      ctx.fillStyle = '#777';
       ctx.fillText('Paused Time', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
   };

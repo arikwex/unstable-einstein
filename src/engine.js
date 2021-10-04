@@ -154,12 +154,33 @@ export default function Engine() {
     }
   };
 
+  const drawSwitch = (ctx, x, y, s, state) => {
+    ctx.fillStyle = '#222';
+    ctx.fillRect(x - s, y - s * 1.5, s * 2, s * 3);
+    if (state) {
+      ctx.fillStyle = '#666';
+      ctx.fillRect(x - s*0.6, y - s * 4, s * 1.2, s * 4);
+      ctx.beginPath();
+      ctx.arc(x, y - s * 4, s, 0, 6.29);
+      ctx.fill();
+    } else {
+      ctx.fillStyle = '#777';
+      ctx.fillRect(x - s*0.6, y, s * 1.2, s * 4);
+      ctx.beginPath();
+      ctx.arc(x, y + s * 4, s, 0, 6.29);
+      ctx.fill();
+    }
+  };
+
   this.render = (ctx) => {
     // Screen dimensions
     const w = canvas.width();
     const h = canvas.height();
     const bh = buttonWidth * h;
     const s = Math.min(bh * 0.2, w * 0.04);
+    const switchX = w * 0.28;
+    const switchY = bh * 0.65;
+    const switchSZ = Math.min(w * 0.015, bh * 0.07);
 
     // Bottom and top rails
     ctx.fillStyle='#000';
@@ -179,10 +200,10 @@ export default function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalSpace) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#363';
+      ctx.fillStyle = '#3a3';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#232';
+      ctx.fillStyle = '#262';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -205,9 +226,11 @@ export default function Engine() {
     if (normalSpace) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Space', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
-      ctx.fillText('Stretched Space', w / 6, bh * 0.2);
+      ctx.fillStyle = '#777';
+      ctx.fillText('Warped Space', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
 
@@ -215,10 +238,10 @@ export default function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalMatter) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#633';
+      ctx.fillStyle = '#a33';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#322';
+      ctx.fillStyle = '#622';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -234,9 +257,11 @@ export default function Engine() {
     if (normalMatter) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Matter', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
+      ctx.fillStyle = '#777';
       ctx.fillText('Anti Matter', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
 
@@ -244,10 +269,10 @@ export default function Engine() {
     ctx.lineWidth = s * 0.3;
     if (normalTime) {
       ctx.strokeStyle = '#fff';
-      ctx.fillStyle = '#336';
+      ctx.fillStyle = '#33a';
     } else {
       ctx.strokeStyle = '#666';
-      ctx.fillStyle = '#223';
+      ctx.fillStyle = '#226';
     }
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -267,9 +292,11 @@ export default function Engine() {
     if (normalTime) {
       ctx.fillStyle = '#fff';
       ctx.fillText('Normal Time', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, true);
     } else {
-      ctx.fillStyle = '#888';
+      ctx.fillStyle = '#777';
       ctx.fillText('Paused Time', w / 6, bh * 0.2);
+      drawSwitch(ctx, switchX, switchY, switchSZ, false);
     }
     ctx.restore();
   };

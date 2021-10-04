@@ -6,6 +6,18 @@ function FixedWall(engine, tick, lane) {
   let x = engine.getTickX(tick);
   let y = engine.getLaneY(lane);
 
+  const canHurtPlayer = () => {
+    const py = engine.getPlayerY();
+    const midY = engine.getLaneY(0.5);
+    if (lane == 0 && py < midY) {
+      return true;
+    }
+    if (lane == 1 && py > midY) {
+      return true;
+    }
+    return false;
+  }
+
   this.update = (dT) => {
     const s = engine.getScale() * 60
     x = engine.getTickX(tick-0.1);
@@ -16,11 +28,7 @@ function FixedWall(engine, tick, lane) {
     const px = engine.getPlayerX();
     const py = engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      const midY = engine.getLaneY(0.5);
-      if (lane == 0 && py < midY) {
-        bus.emit('hit');
-      }
-      if (lane == 1 && py > midY) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -30,7 +38,11 @@ function FixedWall(engine, tick, lane) {
     const s = engine.getScale() * 60;
     const h = engine.laneHeight();
     ctx.translate(x, y);
-    ctx.fillStyle='#f00';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#f00';
+    } else {
+      ctx.fillStyle='rgba(255,0,0,0.25)';
+    }
     ctx.fillRect(-s/2, -h/2, s, h);
     ctx.restore();
   }

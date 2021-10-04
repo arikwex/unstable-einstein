@@ -7,6 +7,10 @@ function StretchWall(engine, tick, mode) {
   let y = engine.getLaneY(0.5);
   let currSize = 0;
 
+  const canHurtPlayer = () => {
+    return currSize > 0.7;
+  }
+
   this.update = (dT) => {
     const s = engine.getScale() * 60
     x = engine.getTickX(tick+0.1);
@@ -24,7 +28,7 @@ function StretchWall(engine, tick, mode) {
     const px = engine.getPlayerX();
     const py = engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      if (currSize > 0.7) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -34,7 +38,11 @@ function StretchWall(engine, tick, mode) {
     const s = engine.getScale() * 60;
     const h = engine.laneHeight() * 2 * (0.9 * currSize + 0.1);
     ctx.translate(x, y);
-    ctx.fillStyle='#0e0';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#0e0';
+    } else {
+      ctx.fillStyle='rgba(0,255,0,0.25)';
+    }
     ctx.fillRect(-s/2, -h/2, s, h);
     ctx.restore();
   }

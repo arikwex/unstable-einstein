@@ -18,14 +18,14 @@ export default function Intro() {
     const w = canvas.width();
     const h = canvas.height() * 0.8;
 
-    const BW = w / 30;
+    const BW = w / 40;
     const BH = h / 10;
     ctx.save();
 
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = this.color;
-    ctx.font = `${w * 0.035}px monospace`;
+    ctx.font = `${w * 0.03}px monospace`;
 
     // RED OBSTACLES
     ctx.fillStyle = '#f00';

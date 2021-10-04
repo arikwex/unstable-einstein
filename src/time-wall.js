@@ -7,6 +7,10 @@ function TimeWall(engine, tick, mode) {
   let currSize = 0;
   let anim = mode * 10;
 
+  const canHurtPlayer = () => {
+    return currSize > 0.2;
+  }
+
   this.update = (dT) => {
     const s = engine.getScale() * 60
     x = engine.getTickX(tick);
@@ -23,7 +27,7 @@ function TimeWall(engine, tick, mode) {
     const px = engine.getPlayerX();
     const py = engine.getPlayerY();
     if (px > x - s/2 && px < x + s / 2) {
-      if (currSize > 0.2) {
+      if (canHurtPlayer()) {
         bus.emit('hit');
       }
     }
@@ -35,7 +39,11 @@ function TimeWall(engine, tick, mode) {
     let ty = engine.topLimit();
     let by = engine.bottomLimit();
     ctx.translate(x, 0);
-    ctx.fillStyle='#00f';
+    if (canHurtPlayer()) {
+      ctx.fillStyle='#00f';
+    } else {
+      ctx.fillStyle='rgba(0,0,255,0.25)';
+    }
     ctx.fillRect(-s/2, ty, s, h + 5);
     ctx.fillRect(-s/2, by, s, - 5 - h);
     ctx.restore();
