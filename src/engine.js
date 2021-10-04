@@ -35,12 +35,15 @@ export default function Engine() {
     if (y > th && y < h) {
       if (x > 0 && x <= w / 3) {
         normalSpace = !normalSpace;
+        bus.emit('space-change');
       }
       if (x > w / 3 && x <= w * 2 / 3) {
         normalMatter = !normalMatter;
+        bus.emit('matter-change');
       }
       if (x > w * 2 / 3 && x <= w) {
         normalTime = !normalTime;
+        bus.emit('time-change');
       }
     }
   });

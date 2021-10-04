@@ -59,13 +59,8 @@ function Audio() {
       return 0.05 * sqr(i/250) * (sin(i/300)+0) + 0.1 * Math.random() * win(i, 0, 1);
     });
 
-    // Buy an item (ding + ding)
-    buySound = generate(0.7, (i) => {
-      return 0.07 * (saw(i/19) * win(i, 0, 0.15) + saw(i/11) * win(i, 0.1, 0.7));
-    });
-
-    // Gain mineral blip + Siphon sound
-    mineralSound = generate(0.15, (i) => {
+    // Matter sound
+    matterSound = generate(0.15, (i) => {
       return 0.04 * sin(i/(15 - i / 2000));
     });
 
@@ -74,28 +69,8 @@ function Audio() {
       return 0.1 * Math.random() * win(i, 0, 0.8) * (sqr(i/200)+1);
     });
 
-    // Swap lane
-    laneSound = generate(0.4, (i) => {
-      return 0.04 * (1+Math.random()/3) * win(i, 0, 0.4) * sin(i/50);
-    });
-
-    // Kepler missile + Crazy Rockets + Nuke
-    missileSound = generate(0.7, (i) => {
-      return 0.04 * Math.random() * win(i, 0, 0.7) * (sqr(i/100) + 1);
-    });
-
-    // Sigma cannon / laser
-    laserSound = generate(1.5, (i) => {
-      return 0.08 * (sin(i/(30-i/400)) * win(i, 0, 0.15) * 3 + saw(i/60)*(sqr(i/400)+1)/2*win(i,0.1,1.5))
-    });
-
-    // Pulse breaker
-    pulseBreakerSound = generate(1, (i) => {
-      return 0.04 * sin(i/50)*(sqr(i/800+1)+1);
-    });
-
-    // Hop sound
-    hopSound = generate(0.7, (i) => {
+    // Space sound
+    spaceSound = generate(0.7, (i) => {
       return 0.1 * (
         saw(i/30) * win(i, 0, 0.1) +
         saw(i/50) * win(i, 0.1, 0.2) +
@@ -105,28 +80,13 @@ function Audio() {
       );
     });
 
-    // Dash sound
-    dashSound = generate(0.7, (i) => {
+    // Time sound
+    timeSound = generate(0.4, (i) => {
       var acc = 0;
       for (let q = 0; q < 10; q++) {
         acc += sin(i/(10+q*q/20)) * win(i, q/10, (q+1)/10);
       }
       return 0.05*acc;
-    });
-
-    // Hyperdrive sound
-    hyperSound = generate(1.5, (i) => {
-      var acc = 0;
-      for (let q = 0; q < 13; q++) {
-        acc += sqr(i/(10-q*q/15)) * win(i, q/15, (q+1)/15);
-        acc += sqr(i/(40-q*q/3)) * win(i, q/15+0.03, (q+1)/15);
-      }
-      return 0.05*acc;
-    });
-
-    // Heal sound
-    healSound = generate(0.6, (i) => {
-      return 0.04 * sin(i/(50-i/2000))*(sqr(i/700+1)+1);
     });
 
     musicBuffer = generate(0.2*48, (i) => {
@@ -171,21 +131,10 @@ function Audio() {
     if (audioCtx == null) { this.init(); }
     bus.on('txn', () => { play(gateCloseSound); });
     bus.on('txn-done', () => { play(gateOpenSound); });
-    bus.on('buy', () => { play(buySound); });
-    bus.on('mineral', () => { play(mineralSound); });
-    bus.on('mine', () => { play(mineralSound); });
     bus.on('hit', () => { play(collisionSound); });
-    bus.on('boom', () => { play(collisionSound); });
-    bus.on('lane', () => { play(laneSound); });
-    bus.on('hop', () => { play(hopSound); });
-    bus.on('dash', () => { play(dashSound); });
-    bus.on('hyper', () => { play(hyperSound); });
-    bus.on('heal', () => { play(healSound); });
-    bus.on('projectile', (t) => {
-      if (t==1 || t==4 || t==5) {play(missileSound);}
-      if (t==2) {play(laserSound);}
-      if (t==3) {play(pulseBreakerSound);}
-    });
+    bus.on('space-change', () => { play(spaceSound); });
+    bus.on('matter-change', () => { play(matterSound); });
+    bus.on('time-change', () => { play(timeSound); });
   };
 
   var musicSource = null;

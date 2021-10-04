@@ -32,16 +32,16 @@ export default function Intro() {
     ctx.fillRect(w/4 - BW/2-BH/3, h/3 - BH, BW, BH);
     ctx.fillRect(w/4 - BW/2+BH/3, h/3, BW, BH);
     ctx.fillStyle = '#fff';
-    ctx.fillText('Avoid red obstacles by', w*3/8, h/3-BH/4);
-    ctx.fillText('destabilizing gravity.', w*3/8, h/3+BH/4);
+    ctx.fillText('Avoid red obstacles by', w*3/8, h/3-BH/3.5);
+    ctx.fillText('destabilizing gravity.', w*3/8, h/3+BH/3.5);
 
     // GREEN OBSTACLES
     ctx.fillStyle = '#0e0';
     ctx.fillRect(w/4 - BW/2-BH/3, h*2/3 - BH / 10, BW, BH/5);
     ctx.fillRect(w/4 - BW/2+BH/3, h*2/3- BH, BW, BH*2);
     ctx.fillStyle = '#fff';
-    ctx.fillText('Avoid green obstacles by', w*3/8, h*2/3-BH/4);
-    ctx.fillText('destabilizing space.', w*3/8, h*2/3+BH/4);
+    ctx.fillText('Avoid green obstacles by', w*3/8, h*2/3-BH/3.5);
+    ctx.fillText('destabilizing space.', w*3/8, h*2/3+BH/3.5);
 
     // BLUE OBSTACLES
     ctx.fillStyle = '#00f';
@@ -51,8 +51,8 @@ export default function Intro() {
     ctx.fillRect(w/4 - BW/2+BH/3, h + BH, BW, -BH*0.95);
 
     ctx.fillStyle = '#fff';
-    ctx.fillText('Avoid blue obstacles by', w*3/8, h-BH/4);
-    ctx.fillText('destabilizing time.', w*3/8, h+BH/4);
+    ctx.fillText('Avoid blue obstacles by', w*3/8, h-BH/3.5);
+    ctx.fillText('destabilizing time.', w*3/8, h+BH/3.5);
 
     ctx.restore();
   }
